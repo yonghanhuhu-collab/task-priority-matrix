@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Priority Matrix V3.1</title>
+    <title>Priority Matrix Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 配色維持 Pro 版質感 */
             --bg: #F2F4F6;
             --text: #2C3E50;
-            --q1: #E57373; /* Red */
-            --q2: #64B5F6; /* Blue */
-            --q3: #FFD54F; /* Yellow */
-            --q4: #B0BEC5; /* Grey */
+            --q1: #E57373; /* Red - Do First */
+            --q2: #64B5F6; /* Blue - Schedule */
+            --q3: #FFD54F; /* Yellow - Delegate */
+            --q4: #B0BEC5; /* Grey - Eliminate */
             --modal-bg: #FFFFFF;
         }
 
@@ -58,12 +57,12 @@
         .quadrant {
             background: #fff; border-radius: 16px;
             padding: 10px; display: flex; flex-direction: column;
-            overflow: hidden; /* 重要：防止溢出 */
+            overflow: hidden; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
             position: relative;
         }
         
-        /* 象限邊框色 */
+        /* Colored Borders */
         #q1 { border-top: 5px solid var(--q1); }
         #q2 { border-top: 5px solid var(--q2); }
         #q3 { border-top: 5px solid var(--q3); }
@@ -75,11 +74,10 @@
             color: #78909C; letter-spacing: 0.5px; flex-shrink: 0;
         }
 
-        /* 關鍵修正：讓列表填滿剩餘空間，確保拖曳感應區夠大 */
         .task-list {
             flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            min-height: 0; /* 讓 flex item 可收縮 */
-            padding-bottom: 20px; /* 底部留白方便拖曳到最下方 */
+            min-height: 0; 
+            padding-bottom: 20px; 
         }
 
         /* === Task Card === */
@@ -122,7 +120,7 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* === Modal (Add/Edit) === */
+        /* === Modal === */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px);
             display: none; justify-content: center; align-items: center; z-index: 200;
@@ -137,28 +135,26 @@
         }
 
         .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; color: var(--text); }
-        
         .input-group { margin-bottom: 15px; }
+        
         .big-input {
             width: 100%; padding: 12px; border: 2px solid #ECEFF1; border-radius: 12px;
             font-size: 16px; background: #F7F9FA; color: var(--text);
         }
         .big-input:focus { border-color: var(--text); background: #fff; outline: none; }
         
-        /* 備註欄位 */
         .note-input {
             width: 100%; padding: 12px; border: 2px solid #ECEFF1; border-radius: 12px;
             font-size: 14px; background: #F7F9FA; min-height: 60px; resize: none;
         }
 
-        /* 修復後的日期選單 */
         .date-input {
             width: 100%; padding: 12px; border: 2px solid #ECEFF1; border-radius: 12px;
             font-size: 16px; background: #F7F9FA; color: #555;
-            -webkit-appearance: none; /* 移除 iOS 預設樣式 */
+            min-height: 45px;
         }
 
-        /* Quadrant Selector */
+        /* Quadrant Buttons */
         .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .quad-btn {
             padding: 12px; border-radius: 12px; border: none;
@@ -177,7 +173,7 @@
         .btn-save { flex: 2; background: #263238; color: white; padding: 12px; border-radius: 10px; font-weight: bold; border:none; font-size:16px; }
         .btn-del { flex: 1; background: #FFEBEE; color: #FF5252; padding: 12px; border-radius: 10px; font-weight: bold; border:none; }
 
-        /* History View */
+        /* History */
         .history-list { padding: 20px; overflow-y: auto; flex: 1; }
         .history-item {
             padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;
@@ -210,11 +206,11 @@
                     <div class="task-list"></div>
                 </div>
                 <div id="q3" class="quadrant" data-id="3">
-                    <div class="quadrant-header"><span>⚡ Delegate 給人做</span><i class="fas fa-user-clock"></i></div>
+                    <div class="quadrant-header"><span>⚡ Delegate 委派</span><i class="fas fa-user-clock"></i></div>
                     <div class="task-list"></div>
                 </div>
                 <div id="q4" class="quadrant" data-id="4">
-                    <div class="quadrant-header"><span>☕ Eliminate 免做</span><i class="fas fa-trash-alt"></i></div>
+                    <div class="quadrant-header"><span>☕ Eliminate 刪除</span><i class="fas fa-trash-alt"></i></div>
                     <div class="task-list"></div>
                 </div>
             </div>
@@ -249,8 +245,8 @@
                 <div class="quad-grid">
                     <button class="quad-btn btn-q1" onclick="selectQuad(1)" id="btnQ1">DO FIRST<br>馬上做</button>
                     <button class="quad-btn btn-q2" onclick="selectQuad(2)" id="btnQ2">SCHEDULE<br>排程做</button>
-                    <button class="quad-btn btn-q3" onclick="selectQuad(3)" id="btnQ3">DELEGATE<br>給人做</button>
-                    <button class="quad-btn btn-q4" onclick="selectQuad(4)" id="btnQ4">ELIMINATE<br>免做</button>
+                    <button class="quad-btn btn-q3" onclick="selectQuad(3)" id="btnQ3">DELEGATE<br>委派</button>
+                    <button class="quad-btn btn-q4" onclick="selectQuad(4)" id="btnQ4">ELIMINATE<br>刪除</button>
                 </div>
             </div>
 
@@ -266,8 +262,8 @@
         let tasks = JSON.parse(localStorage.getItem('proTasksV3')) || [];
         let history = JSON.parse(localStorage.getItem('proHistoryV3')) || [];
         
-        let editingId = null; // Track if we are editing
-        let selectedQ = 2; // Default to Q2
+        let editingId = null; 
+        let selectedQ = 2; 
 
         function init() {
             renderTasks();
@@ -284,7 +280,8 @@
                 const card = document.createElement('div');
                 card.className = 'task-card';
                 card.setAttribute('data-id', task.id);
-                // 點擊卡片本體 -> 編輯
+                
+                // Click card body to edit
                 card.onclick = (e) => {
                     if(!e.target.closest('.btn-check')) openModal(task.id);
                 };
@@ -292,9 +289,14 @@
                 // Date logic
                 let dateHtml = '';
                 if(task.date) {
-                    if(task.date < today) card.classList.add('urgent');
-                    else if(task.date === today) card.classList.add('today');
-                    dateHtml = `<span><i class="far fa-calendar"></i> ${task.date}</span>`;
+                    let statusClass = '';
+                    if(task.date < today) {
+                        statusClass = 'urgent'; // Overdue
+                    } else if(task.date === today) {
+                        statusClass = 'today';
+                    }
+                    if(statusClass) card.classList.add(statusClass);
+                    dateHtml = `<span><i class="far fa-calendar-alt"></i> ${task.date}</span>`;
                 }
 
                 // Note icon
@@ -354,7 +356,6 @@
 
         function selectQuad(q) {
             selectedQ = q;
-            // UI Update
             for(let i=1; i<=4; i++) {
                 const btn = document.getElementById(`btnQ${i}`);
                 if(i === q) btn.classList.add('selected');
@@ -370,14 +371,14 @@
             if(!text) return alert('Please enter a task name');
 
             if(editingId) {
-                // Update existing
+                // Update
                 const t = tasks.find(x => x.id === editingId);
                 t.text = text;
                 t.note = note;
                 t.date = date;
                 t.q = selectedQ;
             } else {
-                // Create new
+                // Create
                 tasks.push({ 
                     id: Date.now(), 
                     text, note, date, 
@@ -416,7 +417,7 @@
                 new Sortable(list, {
                     group: 'shared', 
                     animation: 150, 
-                    delay: 100, // 手機防誤觸
+                    delay: 100, // Touch delay
                     delayOnTouchOnly: true,
                     ghostClass: 'dragging',
                     onEnd: function (evt) {
