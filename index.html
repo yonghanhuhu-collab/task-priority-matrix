@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Priority Matrix V2</title>
+    <title>Priority Matrix Pro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #F5F7F6;
-            --text: #555;
+            /* Premium Morandi Colors */
+            --bg: #F2F4F6;
+            --text: #2C3E50;
             
-            /* Quadrant Colors */
-            --q1-bg: #EACAC3; --q1-text: #8E5B53;
-            --q2-bg: #C3D6D9; --q2-text: #4F6D72;
-            --q3-bg: #E6DEB7; --q3-text: #7A724E;
-            --q4-bg: #DCDCDC; --q4-text: #666666;
+            /* Quadrant Colors (Vibrant but Soft) */
+            --q1: #E57373; /* Red - Do First */
+            --q2: #64B5F6; /* Blue - Schedule */
+            --q3: #FFD54F; /* Yellow - Delegate */
+            --q4: #B0BEC5; /* Grey - Eliminate */
 
-            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            --danger: #FF6B6B;
-            --success: #4ECDC4;
+            --card-bg: #FFFFFF;
+            --shadow: 0 8px 24px rgba(0,0,0,0.08);
+            --modal-bg: rgba(255, 255, 255, 0.95);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -36,127 +37,181 @@
 
         /* === Header === */
         .header {
-            padding: 10px 20px;
+            padding: 15px 25px;
             display: flex; justify-content: space-between; align-items: center;
-            padding-top: max(10px, env(safe-area-inset-top));
-            background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 10; height: 60px;
+            padding-top: max(15px, env(safe-area-inset-top));
+            background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            z-index: 10; height: 70px;
         }
-        .app-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: 1px; }
+        .app-title { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: 0.5px; }
         
-        .header-actions { display: flex; gap: 15px; }
-        .icon-btn { font-size: 20px; color: #888; cursor: pointer; transition: color 0.2s; }
-        .icon-btn:active { color: var(--text); }
-        .icon-btn.active { color: var(--success); }
+        .header-actions i { 
+            font-size: 24px; color: #B0BEC5; margin-left: 20px; 
+            cursor: pointer; transition: color 0.2s; 
+        }
+        .header-actions i.active { color: var(--text); }
 
-        /* === Views === */
+        /* === Matrix View === */
         .view-container { flex: 1; position: relative; overflow: hidden; }
         .view { position: absolute; inset: 0; display: none; flex-direction: column; }
         .view.active { display: flex; animation: fadeIn 0.3s; }
 
-        /* === Matrix View === */
         .matrix-container {
             flex: 1; display: grid; 
             grid-template-columns: 1fr 1fr; 
             grid-template-rows: 1fr 1fr; 
-            gap: 2px; padding: 2px;
-            background: #fff; overflow: hidden;
+            gap: 8px; padding: 10px;
+            background: var(--bg); overflow: hidden;
         }
 
         .quadrant {
-            padding: 10px; display: flex; flex-direction: column;
-            overflow-y: auto; position: relative; transition: background 0.2s;
+            background: #fff; border-radius: 20px;
+            padding: 15px; display: flex; flex-direction: column;
+            overflow-y: auto; position: relative; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: transform 0.1s;
         }
+        
+        /* Colored Borders for Quadrants */
+        #q1 { border-top: 6px solid var(--q1); }
+        #q2 { border-top: 6px solid var(--q2); }
+        #q3 { border-top: 6px solid var(--q3); }
+        #q4 { border-top: 6px solid var(--q4); }
+
         .quadrant-header {
-            font-size: 12px; font-weight: 700; margin-bottom: 8px; 
+            font-size: 13px; font-weight: 700; margin-bottom: 12px; 
             display: flex; justify-content: space-between; align-items: center;
-            opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;
+            color: #78909C; text-transform: uppercase; letter-spacing: 1px;
         }
-        
-        #q1 { background-color: var(--q1-bg); color: var(--q1-text); }
-        #q2 { background-color: var(--q2-bg); color: var(--q2-text); }
-        #q3 { background-color: var(--q3-bg); color: var(--q3-text); }
-        #q4 { background-color: var(--q4-bg); color: var(--q4-text); }
 
-        /* === Task Card === */
+        /* === Task Card (Premium Look) === */
         .task-card {
-            background: rgba(255,255,255,0.95); 
-            padding: 10px; margin-bottom: 8px; border-radius: 8px;
-            box-shadow: var(--card-shadow); font-size: 14px; font-weight: 500;
-            cursor: grab; position: relative; color: #333;
-            animation: popIn 0.2s; touch-action: none;
-            border-left: 4px solid transparent;
+            background: #F7F9FA; 
+            padding: 16px; margin-bottom: 10px; border-radius: 16px;
+            font-size: 17px; font-weight: 500; line-height: 1.4;
+            color: #37474F; cursor: grab; position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            border-left: 5px solid transparent;
+            touch-action: none;
         }
-        .task-card.overdue { border-left-color: var(--danger); }
-        .task-card.today { border-left-color: orange; }
+        .task-card:active { transform: scale(0.98); }
+        .task-card.dragging { opacity: 0.5; }
         
-        .card-content { margin-bottom: 5px; word-wrap: break-word; }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #888; }
+        /* Status Colors */
+        .task-card.urgent { border-left-color: #FF5252; background: #FFF5F5; }
+        .task-card.today { border-left-color: #FFB74D; }
+
+        .card-meta { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-top: 8px; font-size: 12px; color: #90A4AE; font-weight: 400;
+        }
         
-        .btn-check { 
-            width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd;
+        .btn-check {
+            width: 28px; height: 28px; border-radius: 50%; 
+            background: #ECEFF1; color: #CFD8DC;
             display: flex; align-items: center; justify-content: center;
-            color: transparent; transition: all 0.2s; cursor: pointer;
+            font-size: 14px; transition: all 0.2s;
         }
-        .btn-check:active { background: var(--success); border-color: var(--success); color: white; }
+        .btn-check:active { background: #66BB6A; color: white; }
 
-        /* === History View === */
-        .history-list { padding: 20px; overflow-y: auto; flex: 1; }
-        .history-item {
-            padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
-        }
-        .h-text { text-decoration: line-through; color: #999; }
-        .h-date { font-size: 11px; color: #ccc; }
-
-        /* === Fab Button (Wizard Trigger) === */
+        /* === Floating Action Button === */
         .fab {
             position: fixed; bottom: 30px; right: 25px;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: var(--text); color: white;
+            width: 65px; height: 65px; border-radius: 50%;
+            background: #263238; color: white;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 28px; box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             cursor: pointer; z-index: 100;
             padding-bottom: env(safe-area-inset-bottom);
+            transition: transform 0.1s;
         }
+        .fab:active { transform: scale(0.9); }
 
-        /* === Decision Wizard Modal === */
+        /* === Pro Input Modal === */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            display: none; justify-content: center; align-items: flex-end; z-index: 200;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 200;
         }
         .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
-        .modal-sheet {
-            background: #fff; width: 100%; border-radius: 20px 20px 0 0;
-            padding: 25px; padding-bottom: max(30px, env(safe-area-inset-bottom));
-            animation: slideUp 0.3s;
-        }
         
+        .modal-card {
+            background: var(--modal-bg); width: 90%; max-width: 400px;
+            border-radius: 24px; padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            animation: popIn 0.3s;
+        }
+
+        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; color: var(--text); }
+        
+        .input-group { margin-bottom: 20px; }
+        .label { font-size: 12px; font-weight: bold; color: #90A4AE; margin-bottom: 8px; display: block; }
+        
+        /* Big Input Field */
+        .big-input {
+            width: 100%; padding: 15px; border: 2px solid #ECEFF1; border-radius: 16px;
+            font-size: 18px; background: #F7F9FA; color: var(--text);
+            transition: border 0.2s;
+        }
+        .big-input:focus { border-color: var(--text); background: #fff; outline: none; }
+
+        /* Full Width Date Picker */
+        .date-btn {
+            width: 100%; padding: 15px; border: 2px solid #ECEFF1; border-radius: 16px;
+            font-size: 16px; background: #F7F9FA; color: #555; text-align: left;
+            position: relative; cursor: pointer; display: flex; align-items: center;
+        }
+        .date-btn input {
+            position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer;
+        }
+        .date-icon { margin-right: 10px; color: #90A4AE; }
+
+        /* Direct Quadrant Selector Buttons */
+        .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .quad-btn {
+            padding: 15px; border-radius: 16px; border: none;
+            font-size: 14px; font-weight: 700; color: white;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .quad-btn:active { transform: scale(0.96); opacity: 0.8; }
+        .q-icon { font-size: 18px; margin-bottom: 2px; }
+
+        .btn-q1 { background: var(--q1); box-shadow: 0 4px 10px rgba(229, 115, 115, 0.3); }
+        .btn-q2 { background: var(--q2); box-shadow: 0 4px 10px rgba(100, 181, 246, 0.3); }
+        .btn-q3 { background: var(--q3); box-shadow: 0 4px 10px rgba(255, 213, 79, 0.3); color: #5D4037; }
+        .btn-q4 { background: var(--q4); box-shadow: 0 4px 10px rgba(176, 190, 197, 0.3); }
+
+        .magic-link {
+            text-align: center; margin-top: 20px; font-size: 13px; 
+            color: #90A4AE; text-decoration: underline; cursor: pointer;
+        }
+
+        /* History View */
+        .history-list { padding: 20px; overflow-y: auto; flex: 1; }
+        .history-item {
+            padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;
+            font-size: 15px; color: #999;
+        }
+        .h-date { font-size: 12px; color: #ccc; }
+
+        /* Wizard Mode Styles */
         .wizard-step { display: none; }
         .wizard-step.active { display: block; }
-        
-        .w-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--text); }
-        .w-input { width: 100%; padding: 15px; border: 1px solid #eee; border-radius: 12px; font-size: 16px; margin-bottom: 20px; background: #f9f9f9; }
-        .w-btn-group { display: flex; gap: 10px; }
-        .w-btn {
-            flex: 1; padding: 15px; border-radius: 12px; border: none;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-        }
-        .btn-yes { background: var(--q1-bg); color: var(--q1-text); }
-        .btn-no { background: #f0f0f0; color: #666; }
-        .btn-next { background: var(--text); color: white; width: 100%; }
+        .wiz-opts { display: flex; gap: 10px; margin-top: 15px; }
+        .wiz-btn { flex: 1; padding: 15px; border-radius: 12px; border: 2px solid #eee; background: white; font-weight: bold; }
+        .wiz-btn.yes { background: #263238; color: white; border-color: #263238; }
 
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="app-title">PRIORITY MATRIX</div>
+        <div class="app-title">PRIORITY PRO</div>
         <div class="header-actions">
-            <i class="fas fa-th-large icon-btn active" onclick="switchView('matrix')"></i>
-            <i class="fas fa-check-circle icon-btn" onclick="switchView('history')"></i>
+            <i class="fas fa-th-large active" onclick="switchView('matrix', this)"></i>
+            <i class="fas fa-history" onclick="switchView('history', this)"></i>
         </div>
     </div>
 
@@ -164,69 +219,101 @@
         <div id="view-matrix" class="view active">
             <div class="matrix-container">
                 <div id="q1" class="quadrant" data-id="1">
-                    <div class="quadrant-header"><span>🔥 Do First</span><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="quadrant-header"><span>🔥 Do First</span><i class="fas fa-bolt"></i></div>
                     <div class="task-list"></div>
                 </div>
                 <div id="q2" class="quadrant" data-id="2">
-                    <div class="quadrant-header"><span>📅 Schedule</span><i class="far fa-calendar-alt"></i></div>
+                    <div class="quadrant-header"><span>📅 Schedule</span><i class="far fa-calendar-check"></i></div>
                     <div class="task-list"></div>
                 </div>
                 <div id="q3" class="quadrant" data-id="3">
-                    <div class="quadrant-header"><span>⚡ Delegate</span><i class="fas fa-user-friends"></i></div>
+                    <div class="quadrant-header"><span>⚡ Delegate</span><i class="fas fa-user-clock"></i></div>
                     <div class="task-list"></div>
                 </div>
                 <div id="q4" class="quadrant" data-id="4">
-                    <div class="quadrant-header"><span>☕ Eliminate</span><i class="fas fa-coffee"></i></div>
+                    <div class="quadrant-header"><span>☕ Eliminate</span><i class="fas fa-trash-alt"></i></div>
                     <div class="task-list"></div>
                 </div>
             </div>
-            <div class="fab" onclick="openWizard()"><i class="fas fa-plus"></i></div>
+            <div class="fab" onclick="openAddModal()"><i class="fas fa-plus"></i></div>
         </div>
 
         <div id="view-history" class="view">
-            <div style="padding: 20px 20px 0; font-weight:bold; color:var(--text);">Completed Tasks</div>
+            <h3 style="padding:20px 20px 0; color:var(--text);">Completed Tasks 🏆</h3>
             <div id="historyList" class="history-list"></div>
-            <div style="padding: 20px; text-align: center; color: #999; font-size: 12px; cursor: pointer;" onclick="clearHistory()">Clear History</div>
+            <div style="padding:20px; text-align:center; color:#ccc; font-size:12px;" onclick="clearHistory()">Clear History</div>
         </div>
     </div>
 
-    <div id="wizardModal" class="modal-overlay" onclick="if(event.target===this) closeWizard()">
-        <div class="modal-sheet">
-            <div id="step1" class="wizard-step active">
-                <div class="w-title">What needs to be done?</div>
-                <input type="text" id="wizText" class="w-input" placeholder="Task name...">
-                <div class="w-title" style="font-size:14px; margin-bottom:10px;">Due Date (Optional)</div>
-                <input type="date" id="wizDate" class="w-input">
-                <button class="w-btn btn-next" onclick="wizNext(2)">Next</button>
-            </div>
+    <div id="addModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal-card">
+            
+            <div id="directMode">
+                <div class="modal-title">New Task</div>
+                
+                <div class="input-group">
+                    <input type="text" id="taskInput" class="big-input" placeholder="What needs to be done?">
+                </div>
 
-            <div id="step2" class="wizard-step">
-                <div class="w-title">Is it Urgent? 🔥</div>
-                <p style="color:#666; margin-bottom:20px;">Does it have a deadline very soon or require immediate attention?</p>
-                <div class="w-btn-group">
-                    <button class="w-btn btn-no" onclick="setUrgent(false)">No</button>
-                    <button class="w-btn btn-yes" onclick="setUrgent(true)">Yes</button>
+                <div class="input-group">
+                    <div class="date-btn">
+                        <i class="far fa-calendar-alt date-icon"></i>
+                        <span id="dateDisplay">Set Deadline (Optional)</span>
+                        <input type="date" id="taskDate" onchange="updateDateDisplay(this)">
+                    </div>
+                </div>
+
+                <div class="label">ASSIGN PRIORITY</div>
+                <div class="quad-grid">
+                    <button class="quad-btn btn-q1" onclick="saveTask(1)">
+                        <i class="fas fa-fire q-icon"></i> DO FIRST
+                    </button>
+                    <button class="quad-btn btn-q2" onclick="saveTask(2)">
+                        <i class="far fa-clock q-icon"></i> SCHEDULE
+                    </button>
+                    <button class="quad-btn btn-q3" onclick="saveTask(3)">
+                        <i class="fas fa-people-arrows q-icon"></i> DELEGATE
+                    </button>
+                    <button class="quad-btn btn-q4" onclick="saveTask(4)">
+                        <i class="fas fa-ban q-icon"></i> ELIMINATE
+                    </button>
+                </div>
+
+                <div class="magic-link" onclick="startWizard()">
+                    🪄 Not sure? Help me decide
                 </div>
             </div>
 
-            <div id="step3" class="wizard-step">
-                <div class="w-title">Is it Important? ⭐️</div>
-                <p style="color:#666; margin-bottom:20px;">Does it align with your long-term goals or values?</p>
-                <div class="w-btn-group">
-                    <button class="w-btn btn-no" onclick="setImportant(false)">No</button>
-                    <button class="w-btn btn-yes" onclick="setImportant(true)">Yes</button>
+            <div id="wizardMode" style="display:none;">
+                <div class="modal-title">Magic Sorter 🪄</div>
+                
+                <div id="wizStep1" class="wizard-step active">
+                    <p style="font-size:18px; margin-bottom:20px; color:#555;">Is there a strict deadline or immediate consequence if you don't do this?</p>
+                    <div class="wiz-opts">
+                        <button class="wiz-btn" onclick="wizAnswer('urgent', false)">No</button>
+                        <button class="wiz-btn yes" onclick="wizAnswer('urgent', true)">Yes, Urgent</button>
+                    </div>
+                </div>
+
+                <div id="wizStep2" class="wizard-step">
+                    <p style="font-size:18px; margin-bottom:20px; color:#555;">Does this task help you achieve your long-term goals?</p>
+                    <div class="wiz-opts">
+                        <button class="wiz-btn" onclick="wizAnswer('important', false)">No</button>
+                        <button class="wiz-btn yes" onclick="wizAnswer('important', true)">Yes, Important</button>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script>
-        let tasks = JSON.parse(localStorage.getItem('smartTasks')) || [];
-        let history = JSON.parse(localStorage.getItem('smartHistory')) || [];
+        let tasks = JSON.parse(localStorage.getItem('proTasks')) || [];
+        let history = JSON.parse(localStorage.getItem('proHistory')) || [];
         
-        // Wizard State
-        let tempTask = { text: '', date: '', urgent: false, important: false };
+        // Wizard Temp State
+        let wizState = { urgent: false, important: false };
 
         function init() {
             renderTasks();
@@ -237,37 +324,30 @@
         // === Rendering ===
         function renderTasks() {
             document.querySelectorAll('.task-list').forEach(el => el.innerHTML = '');
-            
-            // Check Ivy Lee Limit (Q1 > 6)
-            const q1Count = tasks.filter(t => t.q === 1).length;
-            const q1Header = document.querySelector('#q1 .quadrant-header');
-            if(q1Count > 6) q1Header.style.color = 'red';
-            else q1Header.style.color = 'var(--q1-text)';
-
             const today = new Date().toISOString().split('T')[0];
 
             tasks.forEach(task => {
                 const card = document.createElement('div');
                 card.className = 'task-card';
-                
-                // Date Logic
-                let dateDisplay = '';
-                let statusClass = '';
+                card.setAttribute('data-id', task.id);
+
+                // Date logic
+                let dateHtml = '';
                 if(task.date) {
-                    if(task.date < today) statusClass = 'overdue';
+                    let statusClass = '';
+                    if(task.date < today) statusClass = 'urgent'; // Overdue
                     else if(task.date === today) statusClass = 'today';
-                    dateDisplay = `<span style="font-size:10px;">📅 ${task.date}</span>`;
+                    if(statusClass) card.classList.add(statusClass);
+                    dateHtml = `<span><i class="far fa-calendar"></i> ${task.date}</span>`;
                 }
-                if(statusClass) card.classList.add(statusClass);
 
                 card.innerHTML = `
-                    <div class="card-content">${task.text}</div>
+                    <div>${task.text}</div>
                     <div class="card-meta">
-                        ${dateDisplay}
+                        ${dateHtml}
                         <div class="btn-check" onclick="completeTask(${task.id})"><i class="fas fa-check"></i></div>
                     </div>
                 `;
-                card.setAttribute('data-id', task.id);
                 
                 const container = document.querySelector(`#q${task.q} .task-list`);
                 if (container) container.appendChild(card);
@@ -278,101 +358,78 @@
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(h => `
                 <div class="history-item">
-                    <span class="h-text">${h.text}</span>
+                    <span style="text-decoration:line-through;">${h.text}</span>
                     <span class="h-date">${h.doneDate}</span>
                 </div>
             `).join('');
         }
 
         // === Actions ===
+        function openAddModal() {
+            // Reset fields
+            document.getElementById('taskInput').value = '';
+            document.getElementById('taskDate').value = '';
+            document.getElementById('dateDisplay').innerText = 'Set Deadline (Optional)';
+            // Show Direct Mode
+            document.getElementById('directMode').style.display = 'block';
+            document.getElementById('wizardMode').style.display = 'none';
+            document.getElementById('addModal').classList.add('open');
+            document.getElementById('taskInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.remove('open');
+        }
+
+        function updateDateDisplay(input) {
+            const display = document.getElementById('dateDisplay');
+            display.innerText = input.value ? input.value : 'Set Deadline (Optional)';
+            display.style.color = input.value ? '#2C3E50' : '#888';
+        }
+
+        function saveTask(q) {
+            const text = document.getElementById('taskInput').value.trim();
+            if(!text) return alert('Please enter a task name');
+            const date = document.getElementById('taskDate').value;
+
+            tasks.push({ id: Date.now(), text, date, q });
+            saveData();
+            renderTasks();
+            closeModal();
+        }
+
         function completeTask(id) {
             const task = tasks.find(t => t.id === id);
             if(task) {
-                // Add to history
-                history.unshift({ 
-                    text: task.text, 
-                    doneDate: new Date().toLocaleDateString() 
-                });
-                // Remove from tasks
+                history.unshift({ text: task.text, doneDate: new Date().toLocaleDateString() });
                 tasks = tasks.filter(t => t.id !== id);
-                
                 saveData();
                 renderTasks();
                 renderHistory();
             }
         }
 
-        function switchView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-            
-            // Toggle icons
-            const icons = document.querySelectorAll('.icon-btn');
-            icons.forEach(i => i.classList.remove('active'));
-            if(viewName === 'matrix') icons[0].classList.add('active');
-            else icons[1].classList.add('active');
+        // === Wizard Logic ===
+        function startWizard() {
+            document.getElementById('directMode').style.display = 'none';
+            document.getElementById('wizardMode').style.display = 'block';
+            document.getElementById('wizStep1').style.display = 'block';
+            document.getElementById('wizStep2').style.display = 'none';
         }
 
-        // === Wizard Logic (The Brain) ===
-        function openWizard() {
-            tempTask = { text: '', date: '', urgent: false, important: false };
-            document.getElementById('wizText').value = '';
-            document.getElementById('wizDate').value = '';
-            showStep(1);
-            document.getElementById('wizardModal').classList.add('open');
-            document.getElementById('wizText').focus();
-        }
-
-        function closeWizard() {
-            document.getElementById('wizardModal').classList.remove('open');
-        }
-
-        function showStep(n) {
-            document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
-            document.getElementById(`step${n}`).classList.add('active');
-        }
-
-        function wizNext(step) {
-            const text = document.getElementById('wizText').value.trim();
-            if(!text) return alert('Please enter a task name');
-            tempTask.text = text;
-            tempTask.date = document.getElementById('wizDate').value;
-            showStep(step);
-        }
-
-        function setUrgent(isUrgent) {
-            tempTask.urgent = isUrgent;
-            showStep(3);
-        }
-
-        function setImportant(isImportant) {
-            tempTask.important = isImportant;
-            finalizeTask();
-        }
-
-        function finalizeTask() {
-            // Determine Quadrant
-            let q = 0;
-            if(tempTask.urgent && tempTask.important) q = 1;      // Do First
-            else if(!tempTask.urgent && tempTask.important) q = 2; // Schedule
-            else if(tempTask.urgent && !tempTask.important) q = 3; // Delegate
-            else q = 4;                                            // Eliminate
-
-            tasks.push({
-                id: Date.now(),
-                text: tempTask.text,
-                date: tempTask.date,
-                q: q
-            });
-
-            saveData();
-            renderTasks();
-            closeWizard();
-            
-            // Alert if Q1 is crowded
-            const q1Count = tasks.filter(t => t.q === 1).length;
-            if(q === 1 && q1Count > 6) {
-                setTimeout(() => alert('⚠️ Warning: You have too many tasks in "Do First". Try to focus on the top 6!'), 300);
+        function wizAnswer(type, val) {
+            wizState[type] = val;
+            if(type === 'urgent') {
+                document.getElementById('wizStep1').style.display = 'none';
+                document.getElementById('wizStep2').style.display = 'block';
+            } else {
+                // Finalize
+                let q = 0;
+                if(wizState.urgent && wizState.important) q = 1;
+                else if(!wizState.urgent && wizState.important) q = 2;
+                else if(wizState.urgent && !wizState.important) q = 3;
+                else q = 4;
+                saveTask(q);
             }
         }
 
@@ -380,30 +437,40 @@
         function setupDragAndDrop() {
             document.querySelectorAll('.task-list').forEach(list => {
                 new Sortable(list, {
-                    group: 'shared', animation: 150, ghostClass: 'dragging', delay: 100, delayOnTouchOnly: true,
-                    onEnd: function (evt) { updateTaskQuadrant(evt.item, evt.to); }
+                    group: 'shared', animation: 150, delay: 150, delayOnTouchOnly: true,
+                    onEnd: function (evt) {
+                        const id = parseInt(evt.item.getAttribute('data-id'));
+                        const newQ = parseInt(evt.to.parentElement.getAttribute('data-id'));
+                        const t = tasks.find(x => x.id === id);
+                        if(t) { t.q = newQ; saveData(); }
+                    }
                 });
+            });
+            // Delete Logic
+            document.querySelector('.matrix-container').addEventListener('click', e => {
+                if(e.target.closest('.task-card') && !e.target.closest('.btn-check')) {
+                    // Optional: Click to edit or delete details? 
+                    // For now keeping simple check or drag.
+                    // Long press delete handled by confirm on tap? Let's use simple confirm
+                    // if(confirm('Delete task?')) { ... }
+                }
             });
         }
 
-        function updateTaskQuadrant(card, newContainer) {
-            const id = parseInt(card.getAttribute('data-id'));
-            const newQ = parseInt(newContainer.parentElement.getAttribute('data-id'));
-            const taskIndex = tasks.findIndex(t => t.id === id);
-            if (taskIndex > -1) { tasks[taskIndex].q = newQ; saveData(); }
+        function switchView(viewName, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            document.querySelectorAll('.header-actions i').forEach(i => i.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function clearHistory() {
+            if(confirm('Clear history?')) { history = []; saveData(); renderHistory(); }
         }
 
         function saveData() {
-            localStorage.setItem('smartTasks', JSON.stringify(tasks));
-            localStorage.setItem('smartHistory', JSON.stringify(history));
-        }
-        
-        function clearHistory() {
-            if(confirm('Clear all history?')) {
-                history = [];
-                saveData();
-                renderHistory();
-            }
+            localStorage.setItem('proTasks', JSON.stringify(tasks));
+            localStorage.setItem('proHistory', JSON.stringify(history));
         }
 
         init();
