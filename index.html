@@ -8,97 +8,147 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Morandi Color Palette */
             --bg: #F5F7F6;
             --text: #555;
-            
-            /* Quadrant Colors (Low Saturation) */
-            --q1-bg: #EACAC3; /* Do First */
+            --q1-bg: #EACAC3; 
             --q1-text: #8E5B53;
-            
-            --q2-bg: #C3D6D9; /* Schedule */
+            --q2-bg: #C3D6D9; 
             --q2-text: #4F6D72;
-            
-            --q3-bg: #E6DEB7; /* Delegate */
+            --q3-bg: #E6DEB7; 
             --q3-text: #7A724E;
-            
-            --q4-bg: #DCDCDC; /* Don't Do */
+            --q4-bg: #DCDCDC; 
             --q4-text: #666666;
-
             --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            --drag-over: rgba(255,255,255,0.5);
         }
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         
-        body { 
-            margin: 0; padding: 0; 
-            font-family: 'Roboto', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            height: 100dvh; 
-            display: flex; flex-direction: column; 
-            overflow: hidden;
-        }
-
-        /* === Header === */
-        .header {
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: max(15px, env(safe-area-inset-top));
-            background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 10;
-        }
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; padding-top: max(15px, env(safe-area-inset-top)); background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
         .app-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: 1px; }
-        .trash-zone {
-            color: #ccc; font-size: 20px; border: 2px dashed #ccc; 
-            padding: 5px 15px; border-radius: 20px; transition: all 0.2s;
-        }
+        .trash-zone { color: #ccc; font-size: 20px; border: 2px dashed #ccc; padding: 5px 15px; border-radius: 20px; transition: all 0.2s; }
         .trash-zone.drag-hover { border-color: #ff6b6b; color: #ff6b6b; background: #fff0f0; }
 
-        /* === Main Matrix === */
-        .matrix-container {
-            flex: 1; display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            grid-template-rows: 1fr 1fr; 
-            gap: 2px; padding: 2px;
-            background: #fff; 
-            overflow: hidden;
-        }
-
-        .quadrant {
-            padding: 15px; display: flex; flex-direction: column;
-            overflow-y: auto; position: relative; transition: background 0.2s;
-        }
-        .quadrant-header {
-            font-size: 13px; font-weight: 700; margin-bottom: 10px; 
-            display: flex; justify-content: space-between; align-items: center;
-            opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .matrix-container { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; padding: 2px; background: #fff; overflow: hidden; }
+        .quadrant { padding: 10px; display: flex; flex-direction: column; overflow-y: auto; position: relative; transition: background 0.2s; }
+        .quadrant-header { font-size: 12px; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Quadrant Styles */
         #q1 { background-color: var(--q1-bg); color: var(--q1-text); }
         #q2 { background-color: var(--q2-bg); color: var(--q2-text); }
         #q3 { background-color: var(--q3-bg); color: var(--q3-text); }
         #q4 { background-color: var(--q4-bg); color: var(--q4-text); }
-
         .quadrant.drag-hover { filter: brightness(1.05); }
 
-        /* === Task Card === */
-        .task-card {
-            background: rgba(255,255,255,0.95); 
-            padding: 12px; margin-bottom: 8px; border-radius: 8px;
-            box-shadow: var(--card-shadow); font-size: 15px; font-weight: 500;
-            cursor: grab; position: relative; color: #333;
-            animation: popIn 0.2s;
-            touch-action: none; 
-        }
+        .task-card { background: rgba(255,255,255,0.95); padding: 12px; margin-bottom: 8px; border-radius: 8px; box-shadow: var(--card-shadow); font-size: 14px; font-weight: 500; cursor: grab; position: relative; color: #333; animation: popIn 0.2s; touch-action: none; word-wrap: break-word; }
         .task-card:active { cursor: grabbing; transform: scale(1.02); }
         .task-card.dragging { opacity: 0.5; transform: scale(0.95); }
 
-        /* === Input Area === */
-        .input-area {
-            background: #fff; padding: 15px 20px;
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            display: flex; gap: 10px;
+        .input-area { background: #fff; padding: 15px 20px; padding-bottom: max(20px, env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: flex; gap: 10px; z-index: 20; }
+        .task-input { flex: 1; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; border-radius: 25px; font-size: 16px; outline: none; transition: background 0.2s; }
+        .task-input:focus { background: #fff; border-color: #ddd; }
+        .add-btn { background: var(--text); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .add-btn:active { transform: scale(0.9); }
+
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="app-title">PRIORITY MATRIX</div>
+        <div id="trash" class="trash-zone"><i class="fas fa-trash-alt"></i></div>
+    </div>
+
+    <div class="matrix-container">
+        <div id="q1" class="quadrant" data-id="1">
+            <div class="quadrant-header"><span>🔥 Do First</span><i class="fas fa-exclamation-circle"></i></div>
+            <div class="task-list"></div>
+        </div>
+        <div id="q2" class="quadrant" data-id="2">
+            <div class="quadrant-header"><span>📅 Schedule</span><i class="far fa-calendar-alt"></i></div>
+            <div class="task-list"></div>
+        </div>
+        <div id="q3" class="quadrant" data-id="3">
+            <div class="quadrant-header"><span>⚡ Delegate</span><i class="fas fa-user-friends"></i></div>
+            <div class="task-list"></div>
+        </div>
+        <div id="q4" class="quadrant" data-id="4">
+            <div class="quadrant-header"><span>☕ Don't Do</span><i class="fas fa-coffee"></i></div>
+            <div class="task-list"></div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="newTaskInput" class="task-input" placeholder="New task...">
+        <button class="add-btn" onclick="addNewTask()"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('matrixTasks')) || [];
+
+        function init() {
+            renderTasks();
+            setupDragAndDrop();
+        }
+
+        function renderTasks() {
+            document.querySelectorAll('.task-list').forEach(el => el.innerHTML = '');
+            tasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.innerText = task.text;
+                card.setAttribute('data-id', task.id);
+                const container = document.querySelector(`#q${task.q} .task-list`);
+                if (container) container.appendChild(card);
+            });
+        }
+
+        function addNewTask() {
+            const input = document.getElementById('newTaskInput');
+            const text = input.value.trim();
+            if (!text) return;
+            const newTask = { id: Date.now(), text: text, q: 2 };
+            tasks.push(newTask);
+            saveData();
+            renderTasks();
+            input.value = '';
+        }
+
+        function setupDragAndDrop() {
+            document.querySelectorAll('.task-list').forEach(list => {
+                new Sortable(list, {
+                    group: 'shared', animation: 150, ghostClass: 'dragging', delay: 100, delayOnTouchOnly: true,
+                    onEnd: function (evt) { updateTaskQuadrant(evt.item, evt.to); }
+                });
+            });
+            
+            document.querySelector('.matrix-container').addEventListener('click', function(e) {
+                if(e.target.classList.contains('task-card')) {
+                    if(confirm('Delete this task? 🗑️')) deleteTask(e.target.getAttribute('data-id'));
+                }
+            });
+        }
+
+        function updateTaskQuadrant(card, newContainer) {
+            const id = parseInt(card.getAttribute('data-id'));
+            const newQ = parseInt(newContainer.parentElement.getAttribute('data-id'));
+            const taskIndex = tasks.findIndex(t => t.id === id);
+            if (taskIndex > -1) { tasks[taskIndex].q = newQ; saveData(); }
+        }
+
+        function deleteTask(id) {
+            id = parseInt(id);
+            tasks = tasks.filter(t => t.id !== id);
+            saveData();
+            renderTasks();
+        }
+
+        function saveData() { localStorage.setItem('matrixTasks', JSON.stringify(tasks)); }
+
+        document.getElementById('newTaskInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addNewTask();
+        });
+
+        init();
+    </script>
+</body>
+</html>
